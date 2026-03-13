@@ -43,5 +43,12 @@ app.get("/ping", (req, res) => {
     res.send("Bot is alive!");
 });
 
-app.listen(3000, () => console.log("Bot listening on port 3000"));
+// ✅ Handle HEAD requests (UptimeRobot default)
+app.head("/ping", (req, res) => {
+    res.sendStatus(200);
+});
+
+// ✅ Use Railway's dynamic port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Bot listening on port ${PORT}`));
 
