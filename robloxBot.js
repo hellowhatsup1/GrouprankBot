@@ -19,6 +19,7 @@ async function startBot() {
 
 startBot(); // ✅ call this once when the bot starts
 
+// Rank update endpoint
 app.post("/rank", async (req, res) => {
     const { username, rankName } = req.body;
     try {
@@ -37,4 +38,10 @@ app.post("/rank", async (req, res) => {
     }
 });
 
+// ✅ Ping endpoint for uptime monitoring
+app.get("/ping", (req, res) => {
+    res.send("Bot is alive!");
+});
+
 app.listen(3000, () => console.log("Bot listening on port 3000"));
+
