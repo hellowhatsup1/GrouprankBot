@@ -7,10 +7,10 @@ app.use(express.json());
 
 const GROUP_ID = 52382117; // your group ID
 
-// ✅ Force HEAD /ping to always return 200 instantly
+// ✅ Universal HEAD handler for Railway/UptimeRobot health checks
 app.use((req, res, next) => {
     if (req.method === "HEAD" && req.path === "/ping") {
-        return res.sendStatus(200);
+        return res.sendStatus(200); // Always respond 200 instantly
     }
     next();
 });
@@ -20,7 +20,7 @@ app.get("/ping", (req, res) => {
     res.send("Bot is alive!");
 });
 
-// Bot login
+// ✅ Safe bot login (won’t crash if cookie fails)
 async function startBot() {
     try {
         await noblox.setCookie(process.env.ROBLOX_COOKIE);
@@ -32,9 +32,9 @@ async function startBot() {
     }
 }
 
-startBot(); // ✅ call once at startup
+startBot(); // Call once at startup
 
-// Rank update endpoint
+// ✅ Rank update endpoint
 app.post("/rank", async (req, res) => {
     const { username, rankName } = req.body;
     try {
@@ -43,13 +43,16 @@ app.post("/rank", async (req, res) => {
         const roles = await noblox.getRoles(GROUP_ID);
         const targetRole = roles.find(r => r.name.toLowerCase() === rankName.toLowerCase());
 
-        if (!targetRole) return res.status(400).send("Rank not found");
+        if (!targetRole) {
+            console.log(`Rank "${rankName}" not found`);
+            return res.status(400).send("Rank not found");
+        }
 
         await noblox.setRank(GROUP_ID, userId, targetRole.rank);
         console.log(`Successfully set ${username} to rank "${rankName}"`);
         res.send("Rank updated");
     } catch (err) {
-        console.error(err);
+        console.error("Error updating rank:", err);
         res.status(500).send("Error updating rank");
     }
 });
@@ -57,6 +60,4 @@ app.post("/rank", async (req, res) => {
 // ✅ Use Railway's dynamic port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Bot listening on port ${PORT}`));
-
-
 
