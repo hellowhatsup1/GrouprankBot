@@ -7,17 +7,15 @@ app.use(express.json());
 
 const GROUP_ID = 52382117; // your group ID
 
-// ✅ Universal HEAD handler for Railway/UptimeRobot health checks
+// ✅ Universal healthcheck handler (HEAD + GET) at the very top
 app.use((req, res, next) => {
     if (req.method === "HEAD" && req.path === "/ping") {
-        return res.sendStatus(200); // Always respond 200 instantly
+        return res.sendStatus(200); // Railway/UptimeRobot health check
+    }
+    if (req.method === "GET" && req.path === "/ping") {
+        return res.send("Bot is alive!"); // Manual/browser check
     }
     next();
-});
-
-// ✅ Ping endpoint for uptime monitoring
-app.get("/ping", (req, res) => {
-    res.send("Bot is alive!");
 });
 
 // ✅ Safe bot login (won’t crash if cookie fails)
@@ -60,4 +58,6 @@ app.post("/rank", async (req, res) => {
 // ✅ Use Railway's dynamic port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Bot listening on port ${PORT}`));
+
+
 
