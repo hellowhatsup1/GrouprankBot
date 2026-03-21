@@ -7,6 +7,17 @@ app.use(express.json());
 
 const GROUP_ID = 52382117; // replace with your group ID
 
+// ✅ Log every incoming request (method, path, IP, headers)
+app.use((req, res, next) => {
+    console.log("Incoming request:", {
+        method: req.method,
+        path: req.path,
+        ip: req.ip,
+        headers: req.headers
+    });
+    next();
+});
+
 // ✅ Log every /ping request (HEAD or GET)
 app.use((req, res, next) => {
     if (req.path === "/ping") {
@@ -67,3 +78,6 @@ app.post("/rank", async (req, res) => {
 
 // ✅ Force port 8080 (to match Railway Public Networking)
 app.listen(8080, () => console.log("Bot listening on port 8080"));
+
+   
+
